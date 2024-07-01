@@ -17,23 +17,25 @@ Leetcode questions
    ```
 2. [2405. Optimal Partition of String](https://leetcode.com/problems/optimal-partition-of-string/description/): Given a string s, partition the string into one or more substrings such that the characters in each substring are unique. That is, no letter appears in a single substring more than once. Return the minimum number of substrings in such a partition. Note that each character should belong to exactly one substring in a partition.
    ```python
-           # Maintain only count
-        substring = []
-        substring_count = 0
-        for i in s:
-            if i in substring:
-                substring = [i]
-                substring_count += 1 
-            else:
-                if not substring:
-                    substring_count += 1
-                substring.append(i)
+    class Solution:
+		def partitionString(self, s: str) -> int:
+			# Maintain only count
+			substring = []
+			substring_count = 0
+			for i in s:
+				if i in substring:
+					substring = [i]
+					substring_count += 1 
+				else:
+					if not substring:
+						substring_count += 1
+					substring.append(i)
 
-        # if substring isn't empty, account for last partition
-        if not substring:
-            substring_count += 1 
+			# if substring isn't empty, account for last partition
+			if not substring:
+				substring_count += 1 
 
-        return substring_count
+			return substring_count
    ```
 3. [1. Two Sum](https://leetcode.com/problems/two-sum/description/): Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. You may assume that each input would have exactly one solution, and you may not use the same element twice. You can return the answer in any order.
    ```python
