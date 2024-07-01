@@ -108,3 +108,155 @@ Leetcode questions
 
         return output_lists
    ```
+6. [704. Binary Search](https://leetcode.com/problems/binary-search/description/): Given an array of integers nums which is sorted in ascending order, and an integer target, write a function to search target in nums. If target exists, then return its index. Otherwise, return -1. You must write an algorithm with O(log n) runtime complexity.
+	```python
+	class Solution:
+		def search(self, nums: List[int], target: int) -> int:
+			low, high = 0, len(nums) - 1
+
+			while low <= high:
+				mid = low + (high - low) // 2
+				if nums[mid] == target:
+					return mid
+				elif nums[mid] < target:
+					# check in right half
+					low = mid + 1
+				elif nums[mid] > target:
+					# check in left half
+					high = mid - 1
+			
+			return -1
+			
+		#     return self.binary_search(nums, 0, len(nums)-1, target)
+
+		# def binary_search(self, nums: List[int], low:int, high: int, target: int) -> int:
+
+		#     if high >= low:
+		#         mid = low + (high-low)//2
+
+		#         if nums[mid] == target:
+		#             return mid
+		#         elif nums[mid] < target:
+		#             return self.binary_search(nums, mid+1, high, target)
+		#         elif nums[mid] > target:
+		#             return self.binary_search(nums, low, mid-1, target)
+
+		#     else:
+		#         return -1
+
+	# 1, 2, 4, 5, 5, 6, 7, 8
+	# target = 5
+	```
+7. [3. Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/): Given a string s, find the length of the longest substring without repeating characters.
+	```python
+	class Solution:
+		# def lengthOfLongestSubstring(self, s: str) -> int:
+		#     max_length = 0
+		#     left  = 0
+		#     substring = set()
+		#     # increment right pointer
+		#     for right, val in enumerate(s):
+		#         # remove characters from set until duplicates removed
+		#         while val in substring:
+		#             substring.remove(s[left])
+		#             left += 1
+		#         substring.add(val)
+		#         max_length = max(max_length, right - left + 1)
+		#     return max_length
+		
+		def lengthOfLongestSubstring(self, s: str) -> int:
+			max_len = 0
+			substring = deque()
+			for idx, val in enumerate(s):
+				while val in substring:
+					substring.popleft()
+				substring.append(val)
+				max_len = max(max_len, len(substring))
+
+			return max_len
+	```
+8. [110. Balanced Binary Tree](https://leetcode.com/problems/balanced-binary-tree/): Given a binary tree, determine if it is height-balanced (depth of the two subtrees of every node never differs by more than one.).
+	```python
+	# Definition for a binary tree node.
+	# class TreeNode:
+	#     def __init__(self, val=0, left=None, right=None):
+	#         self.val = val
+	#         self.left = left
+	#         self.right = right
+	class Solution:
+		def isBalanced(self, root: Optional[TreeNode]) -> bool:
+			
+			def dfs(root):
+				if not root:
+					# balanced, height
+					return [True, 0]
+				# call dfs on both left and right subtree
+				left, right = dfs(root.left), dfs(root.right)
+				# differenece in height
+				# and left tree balanced and right tree balanced
+				isBalanced = left[0] and right[0] and abs(left[1] - right[1]) <= 1
+				return [isBalanced, 1 + max(left[1], right[1])]
+			
+			return dfs(root)[0]
+	```
+9. [226. Invert Binary Tree](https://leetcode.com/problems/invert-binary-tree/description/): Given the root of a binary tree, invert the tree, and return its root.
+	```python
+	# Definition for a binary tree node.
+	# class TreeNode:
+	#     def __init__(self, val=0, left=None, right=None):
+	#         self.val = val
+	#         self.left = left
+	#         self.right = right
+	class Solution:
+		def invertTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+			if not root:
+				return None
+
+			# swap left and right children
+			tmp = root.left
+			root.left = root.right
+			root.right = tmp
+
+			# dfs (recursively call left and right subnodes)
+			self.invertTree(root.left)
+			self.invertTree(root.right)
+
+			return root
+	```
+10. [1382. Balance a Binary Search Tree](https://leetcode.com/problems/balance-a-binary-search-tree/description/): Given the root of a binary search tree, return a balanced binary search tree with the same node values. If there is more than one answer, return any of them. A binary search tree is balanced if the depth of the two subtrees of every node never differs by more than 1.
+	```python
+	# Definition for a binary tree node.
+	# class TreeNode:
+	#     def __init__(self, val=0, left=None, right=None):
+	#         self.val = val
+	#         self.left = left
+	#         self.right = right
+	class Solution:
+		def balanceBST(self, root: TreeNode) -> TreeNode:
+			# store inorder traversal
+			inorder = []
+			self.inorder_traversal(root, inorder)
+			return self.create_balanced_bst(inorder, 0, len(inorder)-1)
+			
+		def inorder_traversal(self, root: TreeNode, inorder: list) -> TreeNode:
+			if not root:
+				return None
+			self.inorder_traversal(root.left, inorder)
+			inorder.append(root.val)
+			self.inorder_traversal(root.right, inorder)
+
+		def create_balanced_bst(self, inorder: list, start: int, end: int) -> TreeNode:
+			# base case
+			if start > end: 
+				return None
+
+			# mid point
+			mid = start + (end - start)//2
+
+			left_subtree = self.create_balanced_bst(inorder, start, mid-1)
+			right_subtree = self.create_balanced_bst(inorder, mid+1, end)
+
+			node = TreeNode(inorder[mid], left_subtree, right_subtree)
+
+			return node
+	```
