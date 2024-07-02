@@ -287,3 +287,43 @@ Leetcode questions
 
 			return root
 	```
+
+12. [509. Fibonacci Number](https://leetcode.com/problems/fibonacci-number/description/): The Fibonacci numbers, commonly denoted F(n) form a sequence, called the Fibonacci sequence, such that each number is the sum of the two preceding ones, starting from 0 and 1. That is, F(0) = 0, F(1) = 1; F(n) = F(n - 1) + F(n - 2), for n > 1. Given n, calculate F(n).
+	```python
+	class Solution:
+		def fib(self, n: int) -> int:
+			# 1. recursion
+			# time: O(2^n), space: O(n)
+			if n == 0:
+				return 0
+			elif n == 1:
+				return 1
+			else:
+				return self.fib(n-1) + self.fib(n-2)
+
+			# 2. DP Tabulation
+			# time: O(n), space: O(n)
+			if n == 0:
+				return 0
+			elif n == 1:
+				return 1
+			else:
+				# store a list of fibonacci numbers
+				# fib_nums = [0] * (n+1) # 1 extra to handle n = 0
+				# fib_nums[0] = 0
+				# fib_nums[1] = 1
+				# for i in range(2, n+1):
+				#     fib_nums[i] = fib_nums[i-1] + fib_nums[n-2]
+
+				# return fib_nums[n]
+			
+				# you don't even need to store all numbers, just last two
+				# time: O(n), space: O(1)
+				num1, num2 = 0, 1
+				for i in range(2, n+1):
+					sum = num1 + num2
+					num1 = num2
+					num2 = sum
+				
+				return num2
+	```
