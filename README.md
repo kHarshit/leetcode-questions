@@ -327,3 +327,97 @@ Leetcode questions
 				
 				return num2
 	```
+
+13. 0-1 Knapsack problem: Given N items where each item has some weight and profit associated with it and also given a bag with capacity W, [i.e., the bag can hold at most W weight in it]. The task is to put the items into the bag such that the sum of profits associated with them is the maximum possible. 
+	```python
+	def knapsack(weights, values, capacity):
+		# time: O(n*capacity), space: O(n*capacity)
+		n = len(weights)
+		# create 2d array: (nx1)x(capacity+1)
+		dp = []
+		for i in range(n+1):
+			dp.append([0] * (capacity+1))
+
+		# iterate through table
+		for i in range(n+1):
+			for w in range(capacity + 1):
+				if i == 0 or w == 0:
+					dp[i][w] = 0
+				# if item can be included:
+				# take max of including the item and not including it
+				elif weights[i-1] <= w:
+					dp[i][w] = max(values[i-1] + dp[i-1][w-weights[i-1]], d[i-1][w])
+				# if item can't be included i.e. its weight is greater than capacity, we carry forward the value without including the item. 
+				else:
+					dp[i][w] = dp[i-1][w]
+
+		return d[n][capacity]
+		# Example usage:
+		weights = [1, 2, 3, 4]
+		values = [1, 4, 5, 7]
+		capacity = 7
+		print("Maximum value in Knapsack =", knapsack(weights, values, capacity))
+	
+14. [322. Coin Change](https://leetcode.com/problems/coin-change/description/): You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money. Return the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1. You may assume that you have an infinite number of each kind of coin.
+	```python
+	class Solution:
+		def coinChange(self, coins: List[int], amount: int) -> int:
+			# Initialize dp array where dp[i] represents the minimum coins needed for amount i
+			dp = [float('inf')] * (amount+1) # for amounts: 0...amount
+
+			# base case: for amount 0, we need 0 coins
+			dp[0] = 0
+
+			# for each amount, check each coin
+			for i in range(1, amount+1):
+				# If the coin can be used (i.e., the remaining amount i - coin is non-negative), we update the dp value to the minimum number of coins needed.
+				for coin in coins:
+					if i - coin >= 0:
+						dp[i] = min(dp[i], 1 + dp[i-coin])
+			# if d[amount] is still inf -> not possible to form amount with given coins
+			return dp[amount] if dp[amount] != float('inf') else -1
+	```
+
+15. [518. Coin Change II](https://leetcode.com/problems/coin-change-ii/description/): You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money. Return the number of combinations that make up that amount. If that amount of money cannot be made up by any combination of the coins, return 0. You may assume that you have an infinite number of each kind of coin. The answer is guaranteed to fit into a signed 32-bit integer.
+	```python
+	class Solution:
+		def change(self, amount: int, coins: List[int]) -> int:
+			# 1. using 2d arrays
+			n = len(coins)
+			dp = []
+			for i in range(n+1):
+				dp.append([0] * (amount+1))
+
+			# Base case initialization: There's 1 way to make up amount 0 with any number of coins i.e. no coins
+			for i in range(n + 1):
+				dp[i][0] = 1
+
+			# iterate through table from 1 to n+1 (skip first row)
+			# In 2d table, rows: coins, columns: sum
+			for i in range(1, n+1):
+				for j in range(amount+1):
+
+					# if we exclude the current coin, take previous row value
+					# Add the number of ways to make change without using the current coin
+					dp[i][j] = dp[i-1][j]
+
+					# if we use the current coin
+					if j >= coins[i-1]:
+						dp[i][j] += dp[i][j-coins[i-1]]
+
+			return dp[n][amount]
+
+			# 2. using 1d array, where each row keeps replacing previous row
+			# # Initialize dp array where dp[i] represents the number of ways to make amount i
+			# dp = [0] * (amount + 1)
+
+			# # Base case: There's one way to make amount 0 (no coins)
+			# dp[0] = 1  
+
+			# # For each coin in the given list of coins, iterate through all amounts from the coin's value to the total amount.
+			# for coin in coins:
+			#     for i in range(coin, amount + 1):
+			#         dp[i] += dp[i - coin]
+
+			# return dp[amount]
+	```
