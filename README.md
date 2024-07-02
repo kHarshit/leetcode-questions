@@ -262,3 +262,28 @@ Leetcode questions
 
 			return node
 	```
+11. [105. Construct Binary Tree from Preorder and Inorder Traversal](https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/): Given two integer arrays preorder and inorder where preorder is the preorder traversal of a binary tree and inorder is the inorder traversal of the same tree, construct and return the binary tree.
+	```python
+	# Definition for a binary tree node.
+	# class TreeNode:
+	#     def __init__(self, val=0, left=None, right=None):
+	#         self.val = val
+	#         self.left = left
+	#         self.right = right
+	class Solution:
+		def buildTree(self, preorder: List[int], inorder: List[int]) -> Optional[TreeNode]:
+			# base case
+			if not preorder or not inorder:
+				return None
+			# preorder: root, left, right (first element is root)
+			# inorder: left, root, right (we split on root, elements left to root are in left subtree, right to root are in right subtree)
+			# postorder: left, right, root
+			root = TreeNode(preorder[0])
+			split_point = inorder.index(preorder[0])
+			# for preorder, remove first element and pass preorder list till split_point
+			root.left = self.buildTree(preorder[1:split_point+1], inorder[:split_point])
+			# for right children, take right-half of arrays
+			root.right = self.buildTree(preorder[split_point+1:], inorder[split_point+1:])
+
+			return root
+	```
