@@ -421,3 +421,144 @@ Leetcode questions
 
 			# return dp[amount]
 	```
+
+16. [416. Partition Equal Subset Sum](https://leetcode.com/problems/partition-equal-subset-sum/description/): Given an integer array nums, return true if you can partition the array into two subsets such that the sum of the elements in both subsets is equal or false otherwise.
+	```python
+	class Solution:
+		def canPartition(self, nums: List[int]) -> bool:
+			total_sum = sum(nums)
+
+			# if total sum is odd, it's not possible to partition it into two equal subsets
+			if total_sum % 2 != 0:
+				return False
+
+			target = total_sum // 2 # convert to int from float
+
+			# using 2d DP arrays
+			n = len(nums)
+
+			# dp[i][j]: sum j can be attained from first i numbers
+			dp = []
+			for i in range(n+1):
+				dp.append([False]*(target+1))
+
+			# Base case: There's always a way to partition with sum 0 (by not taking any elements)
+			for i in range(n+1):
+				dp[i][0] = True
+
+			for i in range(1, n+1):
+				for j in range(target+1):
+
+					# if we current value greater than sum, carry forward the value from the previous row
+					if j < nums[i-1]:
+						dp[i][j] = dp[i-1][j]
+
+					elif j >= nums[i-1]:
+						# check if we can get the sum j either by including or excluding the current element
+						# it differs from Coin Change II dp[i][j-coins[i-1]],
+						# here, we can't reuse the elements unlike in Coin Change II
+						dp[i][j] = dp[i-1][j] or dp[i-1][j-nums[i-1]]
+
+			return dp[n][target]
+	```
+17. [1143. Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/description/): Given two strings text1 and text2, return the length of their longest common subsequence. If there is no common subsequence, return 0. A subsequence of a string is a new string generated from the original string with some characters (can be none) deleted without changing the relative order of the remaining characters. For example, "ace" is a subsequence of "abcde". A common subsequence of two strings is a subsequence that is common to both strings.
+	```python
+	class Solution:
+		def longestCommonSubsequence(self, text1: str, text2: str) -> int:
+			m = len(text1)
+			n = len(text2)
+
+			# 2d DP array
+			dp = []
+			for _ in range(m+1):
+				dp.append([0]*(n+1))
+
+			# iterate (skip first row and first column)
+			for i in range(1, m+1):
+				for j in range(1, n+1):
+					# if character is same: find 1 + lcs(m-1, n-1)
+					# e.g. abcde, ace: 1 + lcs(bcde, ce)
+					if text1[i-1] == text2[j-1]:
+						dp[i][j] = 1 + dp[i-1][j-1]
+					else:
+					# if different: max(seq(m,n-1), seq(m-1,n))
+					# e.g. bcde, ce: max(lcs(bcde, e), lcs(cde, ce))
+						dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+
+			return dp[m][n]
+	```
+
+18. [125. Valid Palindrome](https://leetcode.com/problems/valid-palindrome/): A phrase is a palindrome if, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters, it reads the same forward and backward. Alphanumeric characters include letters and numbers. Given a string s, return true if it is a palindrome, or false otherwise.
+	```python
+	class Solution:
+		def isPalindrome(self, s: str) -> bool:
+			s = [c.lower() for c in s if c.isalnum()]
+
+			# you can also do: s == s[::-1]
+			# iterate till half
+			for i in range(len(s)//2):
+				if s[i] != s[-(i+1)]:
+					return False
+			return True
+	```
+
+19. [5. Longest Palindromic Substring](https://leetcode.com/problems/longest-palindromic-substring/description/): Given a string s, return the longest palindromic substring in s.
+	```python
+	class Solution:
+		def longestPalindrome(self, s: str) -> str:
+			n = len(s)
+
+			# # 2d DP array
+			# dp = []
+			# for i in range(n+1):
+			#     dp.append([0]*(n+1))
+
+			# # diagonal entries (single characters) are palindromes
+			# for i in range(n):
+			#     dp[i][i] = True
+			#     # setting the longest substring to last found single char string since it's the longest substring found so far
+			#     longest_str = s[i]
+
+			# # max length of string
+			# max_len = 0
+
+			# # every dp value of i needs the dp value of i+1, so we iterate backwards
+			# for start in range(n-1, -1, -1): # start, stop, step
+			#     for end in range(start+1, n):
+			#         # characters match
+			#         if s[start] == s[end]:
+			#             # if it's a two char. string or if the remaining string is a palindrome too
+			#             if end - start == 1 or dp[start+1][end-1]:
+			#                 # current string is palindrome
+			#                 dp[start][end] = True
+			#                 # if this is the max length string
+			#                 if end-start+1 > max_len:
+			#                     max_len = end-start+1
+			#                     longest_str = s[start:end+1]
+			# return longest_str
+
+			# 2. Center-Expansion Solution
+			def expand_around_center(s, left, right):
+				while left >= 0 and right < len(s) and s[left] == s[right]:
+					left -= 1
+					right += 1
+				return s[left + 1:right]
+		
+			if n == 0:
+				return ""
+			
+			longest = ""
+			
+			for i in range(n):
+				# Odd-length palindromes (single center)
+				odd_palindrome = expand_around_center(s, i, i)
+				if len(odd_palindrome) > len(longest):
+					longest = odd_palindrome
+				
+				# Even-length palindromes (center between two characters)
+				even_palindrome = expand_around_center(s, i, i + 1)
+				if len(even_palindrome) > len(longest):
+					longest = even_palindrome
+			
+			return longest
+	```
