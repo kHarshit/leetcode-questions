@@ -288,6 +288,84 @@ Leetcode questions
 			return root
 	```
 
+* [200. Number of Islands](https://leetcode.com/problems/number-of-islands/description/?envType=problem-list-v2&envId=954v5ops): Given an m x n 2D binary grid grid which represents a map of '1's (land) and '0's (water), return the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+	```python
+	class Solution:
+		def numIslands(self, grid: List[List[str]]) -> int:
+			# if grid is empty
+			if not grid:
+				return 0
+
+			num_islands = 0
+			rows = len(grid)
+			cols = len(grid[0])
+
+			# maintain list of visited locations
+			visited = set()
+
+			def dfs_inplace(row, col):
+				if 0 <= row < rows and 0 <= col < cols \
+							and grid[row][col] == '1':
+					grid[row][col] = '0' # change to visited
+					# recursively call dfs
+					dfs_inplace(row+1, col)
+					dfs_inplace(row-1, col)
+					dfs_inplace(row, col+1)
+					dfs_inplace(row, col-1)
+
+			def dfs(row, col):
+				# maintain stack (LIFO)
+				stack = [(row, col)]
+
+				while stack:
+					# pop from stack
+					row_popped, col_popped = stack.pop()
+									
+					directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+					if (row_popped, col_popped) not in visited:
+						visited.add((row_popped, col_popped))
+
+						for dr, dc in directions:
+							r, c = row_popped + dr, col_popped + dc
+							if 0 <= r < rows and 0 <= c < cols \
+								and grid[r][c] == '1' \
+								and (r, c) not in visited:
+								stack.append((r, c))       
+
+			def bfs(row, col):
+				queue = collections.deque()
+
+				# add location to both queue and visited
+				queue.append((row,col))
+				visited.add((row, col)) # we can also use dictionary
+
+				# as long as q is non-empty
+				while queue:
+					# pop (left) item from queue, (items are getting appended at end (right))
+					row_popped, col_popped = queue.popleft()
+
+					directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+					for dr, dc in directions:
+						# get coordinates for all horizontal and vertical directions
+						r, c = row_popped + dr, col_popped + dc
+						if 0 <= r < rows and 0 <= c < cols \
+							and grid[r][c] == '1' \
+							and (r, c) not in visited:
+							# add to queue and visited
+							queue.append((r, c))
+							visited.add((r, c))
+
+			for r in range(rows):
+				for c in range(cols):
+					if grid[r][c] == '1' and (r, c) not in visited:
+						num_islands += 1
+						dfs_inplace(r, c)
+						# dfs(r, c)
+						# bfs(r, c)
+
+			return num_islands
+    ```
+
 12. [509. Fibonacci Number](https://leetcode.com/problems/fibonacci-number/description/): The Fibonacci numbers, commonly denoted F(n) form a sequence, called the Fibonacci sequence, such that each number is the sum of the two preceding ones, starting from 0 and 1. That is, F(0) = 0, F(1) = 1; F(n) = F(n - 1) + F(n - 2), for n > 1. Given n, calculate F(n).
 	```python
 	class Solution:
