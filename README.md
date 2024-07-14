@@ -213,7 +213,7 @@ Leetcode questions
 			return board
     ```
 
-* 146. [LRU Cache](https://leetcode.com/problems/lru-cache/description/?envType=problem-list-v2&envId=954v5ops): Design a data structure that follows the constraints of a Least Recently Used (LRU) cache. Implement the LRUCache class: LRUCache(int capacity) Initialize the LRU cache with positive size capacity. int get(int key) Return the value of the key if the key exists, otherwise return -1. void put(int key, int value) Update the value of the key if the key exists. Otherwise, add the key-value pair to the cache. If the number of keys exceeds the capacity from this operation, evict the least recently used key. The functions get and put must each run in O(1) average time complexity.
+* [146. LRU Cache](https://leetcode.com/problems/lru-cache/description/?envType=problem-list-v2&envId=954v5ops): Design a data structure that follows the constraints of a Least Recently Used (LRU) cache. Implement the LRUCache class: LRUCache(int capacity) Initialize the LRU cache with positive size capacity. int get(int key) Return the value of the key if the key exists, otherwise return -1. void put(int key, int value) Update the value of the key if the key exists. Otherwise, add the key-value pair to the cache. If the number of keys exceeds the capacity from this operation, evict the least recently used key. The functions get and put must each run in O(1) average time complexity.
 	```python
 	class LRUCache:
 
@@ -298,6 +298,39 @@ Leetcode questions
 			new_node = Node(key, value)
 			self._add_node(new_node)
 			self.dictionary[key] = self.head.next
+	```
+* [Add Two Numbers](https://leetcode.com/problems/add-two-numbers/?envType=problem-list-v2&envId=954v5ops) You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list. You may assume the two numbers do not contain any leading zero, except the number 0 itself.
+	```python
+	# Definition for singly-linked list.
+	class ListNode:
+		def __init__(self, val=0, next=None):
+			self.val = val
+			self.next = next
+
+	class Solution:
+		def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
+			# dummy first node
+			node = ListNode()
+			output = node
+			carry = 0
+			while l1 or l2 or carry:
+				summed_val = carry
+				if l1:
+					summed_val += l1.val
+					l1 = l1.next
+				if l2:
+					summed_val += l2.val
+					l2 = l2.next
+
+				# get current digit and carry
+				curr_digit = summed_val % 10
+				carry = summed_val // 10
+				node.next = ListNode(curr_digit)
+				# iterate output list node as well
+				node = node.next
+
+			# return linked list skippping the dummy first node
+			return output.next
 	```
 
 8. [110. Balanced Binary Tree](https://leetcode.com/problems/balanced-binary-tree/): Given a binary tree, determine if it is height-balanced (depth of the two subtrees of every node never differs by more than one.).
