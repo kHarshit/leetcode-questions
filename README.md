@@ -213,6 +213,93 @@ Leetcode questions
 			return board
     ```
 
+* 146. [LRU Cache](https://leetcode.com/problems/lru-cache/description/?envType=problem-list-v2&envId=954v5ops): Design a data structure that follows the constraints of a Least Recently Used (LRU) cache. Implement the LRUCache class: LRUCache(int capacity) Initialize the LRU cache with positive size capacity. int get(int key) Return the value of the key if the key exists, otherwise return -1. void put(int key, int value) Update the value of the key if the key exists. Otherwise, add the key-value pair to the cache. If the number of keys exceeds the capacity from this operation, evict the least recently used key. The functions get and put must each run in O(1) average time complexity.
+	```python
+	class LRUCache:
+
+		def __init__(self, capacity: int):
+			# python 3.7+: default dictionary is ordered
+			self.dictionary = dict()
+			self.capacity = capacity
+
+		def get(self, key: int) -> int:
+			if key not in self.dictionary:
+				return -1
+			# since dictionary is ordered, remove the value and re-add it at the end
+			val = self.dictionary.pop(key)
+			self.dictionary[key] = val
+			return val
+
+		def put(self, key: int, value: int) -> None:
+			if key in self.dictionary:
+				self.dictionary.pop(key)
+			# check capacity
+			if len(self.dictionary) == self.capacity:
+				first_key = next(iter(self.dictionary)) # or you can run for loop and get first key
+				del self.dictionary[first_key]
+			# update value regardless it's in dictionary
+			self.dictionary[key] = value
+	```
+	2nd solution
+	```python
+	class Node:
+		def __init__(self, key, val):
+			self.val = val
+			self.key = key
+			self.next = None
+			self.prev = None
+
+	class LRUCache:
+		def __init__(self, capacity: int):
+			# [head] <-> [tail]
+			self.capacity = capacity
+			self.dictionary = {}
+			# adding dummy head and tail simplief doubly linked list operations
+			self.head = Node(-1, -1)
+			self.tail = Node(-1, -1)
+			self.head.next = self.tail
+			self.tail.prev = self.head
+
+		def get(self, key: int) -> int:
+			if key not in self.dictionary:
+				return -1
+			# get node
+			node = self.dictionary[key]
+			# remove node from its current position
+			self._remove_node(node)
+			# add node to the front
+			self._add_node(node)
+			return node.val
+
+		def _add_node(self, node):
+			# [head] <-> [key:val] <-> [tail]
+			node.prev = self.head
+			node.next = self.head.next
+			self.head.next.prev = node
+			self.head.next = node
+
+		def _remove_node(self, node):
+			prev_node = node.prev
+			next_node = node.next
+			# bypass the current node
+			next_node.prev = prev_node
+			prev_node.next = next_node
+
+		def put(self, key: int, value: int) -> None:
+			if key in self.dictionary:
+				self._remove_node(self.dictionary[key])
+				# Remove the old key from the dictionary
+				del self.dictionary[key]
+			if len(self.dictionary) == self.capacity:
+				least_used_node = self.tail.prev
+				self._remove_node(least_used_node)
+				del self.dictionary[least_used_node.key]
+			# update value regardless it's in dictionary
+			new_node = Node(key, value)
+			self._add_node(new_node)
+			self.dictionary[key] = self.head.next
+	```
+
 8. [110. Balanced Binary Tree](https://leetcode.com/problems/balanced-binary-tree/): Given a binary tree, determine if it is height-balanced (depth of the two subtrees of every node never differs by more than one.).
 	```python
 	# Definition for a binary tree node.
