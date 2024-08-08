@@ -299,6 +299,47 @@ Leetcode questions
 			self._add_node(new_node)
 			self.dictionary[key] = self.head.next
 	```
+
+* [238. Product of Array Except Self] Given an integer array nums, return an array answer such that answer[i] is equal to the product of all the elements of nums except nums[i]. The product of any prefix or suffix of nums is guaranteed to fit in a 32-bit integer. You must write an algorithm that runs in O(n) time and without using the division operation.
+	```python
+	class Solution:
+    def productExceptSelf(self, nums: List[int]) -> List[int]:
+        # I: use prefix and suffix arrays then multiply invidual elements
+        # output = []
+
+        # nums = [1,2,3,4]
+        # | 1 | a | a * b | a * b * c |
+        # prefix_products = [1] * len(nums)
+        # | a*b*c*d | b*c*d | c*d |  d |
+        # suffix_products = [1] * len(nums)
+
+        # store prefix products
+        # [1, 1, 2, 6]
+        # for i in range(1, len(nums)):
+        #     prefix_products[i] = prefix_products[i-1] * nums[i-1]
+        
+        # # store suffix products iterating from the end -2 to 0
+        # # [24, 12, 4, 1]
+        # for i in range(len(nums)-2, -1, -1): # nums[-2:-1]: -1 isn't included so 0
+        #     suffix_products[i] = suffix_products[i+1] * nums[i+1]
+
+        # for i in range(len(nums)):
+        #     output.append(prefix_products[i] * suffix_products[i])
+
+        # II: use O(n) storage
+        output = [1] * len(nums)
+        for i in range(1, len(nums)):
+            output[i] = output[i-1] * nums[i-1]
+
+        # Compute suffix products on the fly and multiply with prefix products in output array
+        suffix_product = 1
+        for i in range(len(nums)-1, -1, -1):
+            output[i] *= suffix_product
+            suffix_product *= nums[i]
+
+        return output
+	```
+	
 * [Add Two Numbers](https://leetcode.com/problems/add-two-numbers/?envType=problem-list-v2&envId=954v5ops) You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list. You may assume the two numbers do not contain any leading zero, except the number 0 itself.
 	```python
 	# Definition for singly-linked list.
